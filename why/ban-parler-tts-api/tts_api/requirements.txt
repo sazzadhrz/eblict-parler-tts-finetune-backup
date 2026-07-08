@@ -1,0 +1,7 @@
+fastapi>=0.100.0
+uvicorn[standard]>=0.23.0
+uvloop
+httptools
+soundfile
+numpy
+pynvml

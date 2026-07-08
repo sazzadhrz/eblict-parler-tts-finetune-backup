@@ -1,0 +1,78 @@
+{
+  "builder_name": "parquet",
+  "citation": "",
+  "config_name": "default",
+  "dataset_name": "vertex-female1-tts-dataset-tags",
+  "dataset_size": 3944217,
+  "description": "",
+  "download_checksums": {
+    "hf://datasets/sazzad-sit/vertex-female1-tts-dataset-tags@31ea7967370dacf0fd49b884f62251fbe34a9dfc/data/train-00000-of-00001.parquet": {
+      "num_bytes": 1679918,
+      "checksum": null
+    }
+  },
+  "download_size": 1679918,
+  "features": {
+    "text": {
+      "dtype": "string",
+      "_type": "Value"
+    },
+    "utterance_pitch_mean": {
+      "dtype": "float32",
+      "_type": "Value"
+    },
+    "utterance_pitch_std": {
+      "dtype": "float32",
+      "_type": "Value"
+    },
+    "snr": {
+      "dtype": "float64",
+      "_type": "Value"
+    },
+    "c50": {
+      "dtype": "float64",
+      "_type": "Value"
+    },
+    "speaking_rate": {
+      "dtype": "string",
+      "_type": "Value"
+    },
+    "phonemes": {
+      "dtype": "string",
+      "_type": "Value"
+    },
+    "noise": {
+      "dtype": "string",
+      "_type": "Value"
+    },
+    "reverberation": {
+      "dtype": "string",
+      "_type": "Value"
+    },
+    "speech_monotony": {
+      "dtype": "string",
+      "_type": "Value"
+    },
+    "text_description": {
+      "dtype": "string",
+      "_type": "Value"
+    }
+  },
+  "homepage": "",
+  "license": "",
+  "size_in_bytes": 5624135,
+  "splits": {
+    "train": {
+      "name": "train",
+      "num_bytes": 3944217,
+      "num_examples": 10000,
+      "dataset_name": "vertex-female1-tts-dataset-tags"
+    }
+  },
+  "version": {
+    "version_str": "0.0.0",
+    "major": 0,
+    "minor": 0,
+    "patch": 0
+  }
+}

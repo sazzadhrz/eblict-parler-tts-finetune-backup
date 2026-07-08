@@ -1,0 +1,78 @@
+python main.py "sazzad-sit/vertex-female1-tts-dataset" \
+  --text_column_name "text" \
+  --audio_column_name "audio" \
+  --cpu_num_workers 16 \
+  --num_workers_per_gpu_for_pitch 8 \
+  --rename_column \
+  --repo_id "vertex-female1-tts-dataset-tags" \
+  --penn_batch_size 256   # reduce from 512
+
+
+
+python ./scripts/metadata_to_text.py \
+    "sazzad-sit/vertex-female1-tts-dataset-tags" \
+    --repo_id "sazzad-sit/vertex-female1-tts-dataset-tags" \
+    --cpu_num_workers 2 \
+    --avoid_pitch_computation \
+    --save_bin_edges "./examples/tags_to_annotations/vertex-female1_bin_edges.json"
+
+
+
+python ./scripts/run_prompt_creation.py \
+    --model_name_or_path "mistralai/Mistral-7B-Instruct-v0.3" \
+    --per_device_eval_batch_size 8 \
+    --dataset_name "sazzad-sit/vertex-female1-tts-dataset-tags" \
+    --output_dir "./vertex-female1-descriptions" \
+    --hub_dataset_id "sazzad-sit/vertex-female1-tts-dataset-descriptions" \
+    --push_to_hub \
+    --is_single_speaker \
+    --speaker_name "Sadia" \
+    --preprocessing_num_workers 2
+
+
+accelerate launch ./training/run_parler_tts_training.py \
+    --model_name_or_path "ai4bharat/indic-parler-tts-pretrained" \
+    --feature_extractor_name "ylacombe/dac_44khz" \
+    --description_tokenizer_name "google/flan-t5-large" \
+    --prompt_tokenizer_name "ai4bharat/indic-parler-tts-pretrained" \
+    --report_to "none" \
+    --overwrite_output_dir true \
+    --train_dataset_name "sazzad-sit/vertex-female1-tts-dataset" \
+    --train_metadata_dataset_name "sazzad-sit/vertex-female1-tts-dataset-descriptions" \
+    --train_split_name "train" \
+    --train_dataset_config_name "default" \
+    --target_audio_column_name "audio" \
+    --description_column_name "text_description" \
+    --prompt_column_name "text" \
+    --max_duration_in_seconds 30 \
+    --min_duration_in_seconds 2.0 \
+    --max_text_length 400 \
+    --do_train true \
+    --do_eval false \
+    --num_train_epochs 20 \
+    --per_device_train_batch_size 4 \
+    --audio_encoder_per_device_batch_size 12 \
+    --gradient_accumulation_steps 8 \
+    --gradient_checkpointing true \
+    --learning_rate 1e-4 \
+    --adam_beta1 0.9 \
+    --adam_beta2 0.99 \
+    --weight_decay 0.01 \
+    --lr_scheduler_type "cosine" \
+    --warmup_steps 1000 \
+    --logging_steps 100 \
+    --save_steps 1000 \
+    --freeze_text_encoder true \
+    --dtype "bfloat16" \
+    --attn_implementation "eager" \
+    --seed 42 \
+    --output_dir "./output_dir_vertex_female1_finetune/" \
+    --temporary_save_to_disk "./vertex_female1_vectorized_dataset_tmp/" \
+    --save_to_disk "./vertex_female1_vectorized_dataset/" \
+    --preprocessing_num_workers 4 \
+    --dataloader_num_workers 4 \
+    --group_by_length true \
+    --remove_unused_columns false
+
+
+     --attn_implementation "flash_attention_2" \ # eager

@@ -1,0 +1,22 @@
+name: infer
+channels:
+  - pytorch
+  - nvidia
+  - conda-forge
+  - defaults
+dependencies:
+  - python=3.10
+  - pytorch::pytorch=2.6.0
+  - pytorch::torchvision
+  - pytorch::torchaudio
+  - pip:
+    - fastapi>=0.100.0
+    - uvicorn[standard]
+    - uvloop
+    - httptools
+    - transformers==4.46.1
+    - parler_tts==0.2.2
+    - soundfile
+    - numpy
+    - pynvml
+    - sentencepiece

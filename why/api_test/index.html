@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Parler-TTS Streaming</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-900 text-white min-h-screen flex items-center justify-center p-5">
+
+    <div class="max-w-2xl w-full bg-gray-800 p-8 rounded-2xl shadow-2xl border border-gray-700">
+        <h1 class="text-3xl font-bold mb-6 text-blue-400">Parler-TTS Streamer</h1>
+        
+        <div class="space-y-4">
+            <div>
+                <label class="block text-sm font-medium text-gray-400 mb-1">Description (Voice Style)</label>
+                <textarea id="description" rows="2" class="w-full bg-gray-700 border border-gray-600 rounded-lg p-3 focus:ring-2 focus:ring-blue-500 outline-none">Kanak speaks at a fast speed with a slightly expressive delivery. The recording is very clear and quite confined sounding.</textarea>
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium text-gray-400 mb-1">Text to Speak</label>
+                <textarea id="textInput" rows="3" class="w-full bg-gray-700 border border-gray-600 rounded-lg p-3 focus:ring-2 focus:ring-blue-500 outline-none" placeholder="Enter text here...">আমার সোনার বাংলা, আমি তোমায় ভালোবাসি।</textarea>
+            </div>
+
+            <button id="generateBtn" class="w-full bg-blue-600 hover:bg-blue-500 transition-colors py-4 rounded-xl font-bold text-lg flex items-center justify-center gap-2">
+                <span id="btnText">Generate & Stream</span>
+                <div id="loader" class="hidden w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+            </button>
+        </div>
+
+        <div id="status" class="mt-6 text-sm text-gray-500 text-center italic">Ready to generate...</div>
+    </div>
+
+    <script>
+        let audioCtx;
+        let nextStartTime = 0;
+        const SAMPLE_RATE = 44100; // Match your model's sampling rate
+
+        const generateBtn = document.getElementById('generateBtn');
+        const loader = document.getElementById('loader');
+        const status = document.getElementById('status');
+
+        async function initAudio() {
+            if (!audioCtx) {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)({ sampleRate: SAMPLE_RATE });
+            }
+            if (audioCtx.state === 'suspended') {
+                await audioCtx.resume();
+            }
+        }
+
+        generateBtn.onclick = async () => {
+            await initAudio();
+            
+            const text = document.getElementById('textInput').value;
+            const description = document.getElementById('description').value;
+
+            // Reset timing
+            nextStartTime = audioCtx.currentTime;
+            
+            const socket = new WebSocket('ws://localhost:8001/ws/generate');
+            socket.binaryType = 'arraybuffer';
+
+            generateBtn.disabled = true;
+            loader.classList.remove('hidden');
+            status.innerText = "Connecting and generating...";
+
+            socket.onopen = () => {
+                socket.send(JSON.stringify({ text, description }));
+            };
+
+            socket.onmessage = async (event) => {
+                if (typeof event.data === 'string') {
+                    if (event.data === "EOS") {
+                        status.innerText = "Generation complete.";
+                        stopLoading();
+                    }
+                    return;
+                }
+
+                // Convert incoming binary to Float32
+                const float32Data = new Float32Array(event.data);
+                playBuffer(float32Data);
+            };
+
+            socket.onerror = (err) => {
+                console.error("WS Error:", err);
+                stopLoading();
+            };
+
+            socket.onclose = () => {
+                stopLoading();
+            };
+        };
+
+        function playBuffer(data) {
+            const audioBuffer = audioCtx.createBuffer(1, data.length, SAMPLE_RATE);
+            audioBuffer.copyToChannel(data, 0);
+
+            const source = audioCtx.createBufferSource();
+            source.buffer = audioBuffer;
+            source.connect(audioCtx.destination);
+
+            // Schedule the chunk to play immediately after the previous one
+            const startTime = Math.max(nextStartTime, audioCtx.currentTime);
+            source.start(startTime);
+            
+            // Keep track of when this chunk ends
+            nextStartTime = startTime + audioBuffer.duration;
+            status.innerText = "Streaming audio...";
+        }
+
+        function stopLoading() {
+            generateBtn.disabled = false;
+            loader.classList.add('hidden');
+        }
+    </script>
+</body>
+</html>

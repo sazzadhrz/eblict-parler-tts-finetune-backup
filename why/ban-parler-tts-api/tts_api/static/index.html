@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BanTTS Demo</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: system-ui, sans-serif;
+      background: #0f1117;
+      color: #e0e0e0;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      min-height: 100vh;
+      padding: 40px 16px;
+    }
+    .card {
+      background: #1a1d27;
+      border: 1px solid #2e3248;
+      border-radius: 12px;
+      padding: 32px;
+      width: 100%;
+      max-width: 680px;
+    }
+    h1 { font-size: 1.4rem; font-weight: 600; margin-bottom: 4px; }
+    .subtitle { font-size: 0.85rem; color: #888; margin-bottom: 24px; }
+    label { display: block; font-size: 0.8rem; color: #aaa; margin-bottom: 6px; }
+    textarea {
+      width: 100%;
+      background: #0f1117;
+      border: 1px solid #2e3248;
+      border-radius: 8px;
+      color: #e0e0e0;
+      padding: 10px 12px;
+      font-size: 0.95rem;
+      resize: vertical;
+      min-height: 140px;
+    }
+    textarea:focus { outline: none; border-color: #5865f2; }
+    .voice-row {
+      display: flex;
+      gap: 10px;
+      margin-top: 18px;
+    }
+    .voice-btn {
+      flex: 1;
+      padding: 10px;
+      background: #0f1117;
+      border: 1px solid #2e3248;
+      border-radius: 8px;
+      color: #aaa;
+      font-size: 0.9rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: border-color 0.15s, color 0.15s;
+      margin-top: 0;
+      width: auto;
+    }
+    .voice-btn.active {
+      border-color: #5865f2;
+      color: #fff;
+      background: #1e2240;
+    }
+    .voice-btn:hover:not(.active) { border-color: #5865f2; color: #ccc; }
+    button#btn {
+      margin-top: 20px;
+      width: 100%;
+      padding: 12px;
+      background: #5865f2;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    button#btn:hover { background: #4752c4; }
+    button#btn:disabled { background: #3a3f6b; cursor: not-allowed; }
+    .status { margin-top: 14px; font-size: 0.85rem; color: #888; min-height: 20px; }
+    .status.error { color: #f87171; }
+    #player-wrap { margin-top: 20px; display: none; }
+    audio { width: 100%; border-radius: 8px; }
+    a.dl {
+      display: inline-block;
+      margin-top: 10px;
+      font-size: 0.8rem;
+      color: #5865f2;
+      text-decoration: none;
+    }
+    a.dl:hover { text-decoration: underline; }
+  </style>
+</head>
+<body>
+<div class="card">
+  <h1>BanTTS</h1>
+  <p class="subtitle">Experimental Version</p>
+
+  <div>
+    <label for="text">Text to synthesize</label>
+    <textarea id="text" placeholder="Type or paste text here..."></textarea>
+  </div>
+
+  <div>
+    <label style="margin-top:18px;">Voice</label>
+    <div class="voice-row">
+      <button class="voice-btn active" data-voice="female" onclick="selectVoice(this)">Female</button>
+      <button class="voice-btn" data-voice="male" onclick="selectVoice(this)">Male</button>
+    </div>
+  </div>
+
+  <button id="btn" onclick="synthesize()">Synthesize</button>
+  <div class="status" id="status"></div>
+
+  <div id="player-wrap">
+    <audio id="player" controls></audio>
+    <a class="dl" id="dl-link" download="speech.wav">Download WAV</a>
+  </div>
+</div>
+
+<script>
+  let selectedVoice = 'female';
+
+  function selectVoice(el) {
+    document.querySelectorAll('.voice-btn').forEach(b => b.classList.remove('active'));
+    el.classList.add('active');
+    selectedVoice = el.dataset.voice;
+  }
+
+  async function synthesize() {
+    const text = document.getElementById('text').value.trim();
+    if (!text) { setStatus('Please enter some text.', true); return; }
+
+    const btn = document.getElementById('btn');
+    btn.disabled = true;
+    setStatus('Synthesizing...');
+    document.getElementById('player-wrap').style.display = 'none';
+
+    const player = document.getElementById('player');
+    if (player.src && player.src.startsWith('blob:')) URL.revokeObjectURL(player.src);
+
+    try {
+      const res = await fetch('/tts', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text, voice: selectedVoice }),
+      });
+
+      if (!res.ok) {
+        const err = await res.text();
+        setStatus('Error ' + res.status + ': ' + err, true);
+        return;
+      }
+
+      const blob = await res.blob();
+      const url = URL.createObjectURL(blob);
+      player.src = url;
+      player.load();
+      player.play();
+
+      document.getElementById('dl-link').href = url;
+      document.getElementById('player-wrap').style.display = 'block';
+      setStatus('Done.');
+    } catch (e) {
+      setStatus('Request failed: ' + e.message, true);
+    } finally {
+      btn.disabled = false;
+    }
+  }
+
+  function setStatus(msg, isError) {
+    const s = document.getElementById('status');
+    s.textContent = msg;
+    s.className = 'status' + (isError ? ' error' : '');
+  }
+</script>
+</body>
+</html>

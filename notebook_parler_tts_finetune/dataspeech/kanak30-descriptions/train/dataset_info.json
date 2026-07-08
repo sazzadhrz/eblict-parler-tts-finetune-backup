@@ -1,0 +1,78 @@
+{
+  "builder_name": "parquet",
+  "citation": "",
+  "config_name": "default",
+  "dataset_name": "kanak30-tts-tags",
+  "dataset_size": 7459584,
+  "description": "",
+  "download_checksums": {
+    "hf://datasets/sazzad-sit/kanak30-tts-tags@96551e7e7aaf1e2238ff1fae4b8b32e801c059c3/data/train-00000-of-00001.parquet": {
+      "num_bytes": 3185407,
+      "checksum": null
+    }
+  },
+  "download_size": 3185407,
+  "features": {
+    "text": {
+      "dtype": "string",
+      "_type": "Value"
+    },
+    "utterance_pitch_mean": {
+      "dtype": "float32",
+      "_type": "Value"
+    },
+    "utterance_pitch_std": {
+      "dtype": "float32",
+      "_type": "Value"
+    },
+    "snr": {
+      "dtype": "float64",
+      "_type": "Value"
+    },
+    "c50": {
+      "dtype": "float64",
+      "_type": "Value"
+    },
+    "speaking_rate": {
+      "dtype": "string",
+      "_type": "Value"
+    },
+    "phonemes": {
+      "dtype": "string",
+      "_type": "Value"
+    },
+    "noise": {
+      "dtype": "string",
+      "_type": "Value"
+    },
+    "reverberation": {
+      "dtype": "string",
+      "_type": "Value"
+    },
+    "speech_monotony": {
+      "dtype": "string",
+      "_type": "Value"
+    },
+    "text_description": {
+      "dtype": "string",
+      "_type": "Value"
+    }
+  },
+  "homepage": "",
+  "license": "",
+  "size_in_bytes": 10644991,
+  "splits": {
+    "train": {
+      "name": "train",
+      "num_bytes": 7459584,
+      "num_examples": 17670,
+      "dataset_name": "kanak30-tts-tags"
+    }
+  },
+  "version": {
+    "version_str": "0.0.0",
+    "major": 0,
+    "minor": 0,
+    "patch": 0
+  }
+}

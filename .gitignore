@@ -1,0 +1,16 @@
+**/__pycache__/
+**/*.pyc
+**/*.pyo
+*.egg-info/
+.eggs/
+
+# Model weights - backed up to Hugging Face
+parler-tts/output_dir_*/model.safetensors
+parler-tts/output_dir_*/checkpoint-*/
+
+# Datasets
+parler-tts/*_dataset/
+parler-tts/*_dataset_tmp/
+
+# Jupyter checkpoints
+.ipynb_checkpoints/

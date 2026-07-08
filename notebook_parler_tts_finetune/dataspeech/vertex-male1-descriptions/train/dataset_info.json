@@ -1,0 +1,78 @@
+{
+  "builder_name": "parquet",
+  "citation": "",
+  "config_name": "default",
+  "dataset_name": "vertex-male1-tts-dataset-tags",
+  "dataset_size": 4643660,
+  "description": "",
+  "download_checksums": {
+    "hf://datasets/sazzad-sit/vertex-male1-tts-dataset-tags@ab1b1925beda71f5e870ab77f755023f8ba6a132/data/train-00000-of-00001.parquet": {
+      "num_bytes": 2004677,
+      "checksum": null
+    }
+  },
+  "download_size": 2004677,
+  "features": {
+    "text": {
+      "dtype": "string",
+      "_type": "Value"
+    },
+    "utterance_pitch_mean": {
+      "dtype": "float32",
+      "_type": "Value"
+    },
+    "utterance_pitch_std": {
+      "dtype": "float32",
+      "_type": "Value"
+    },
+    "snr": {
+      "dtype": "float64",
+      "_type": "Value"
+    },
+    "c50": {
+      "dtype": "float64",
+      "_type": "Value"
+    },
+    "speaking_rate": {
+      "dtype": "string",
+      "_type": "Value"
+    },
+    "phonemes": {
+      "dtype": "string",
+      "_type": "Value"
+    },
+    "noise": {
+      "dtype": "string",
+      "_type": "Value"
+    },
+    "reverberation": {
+      "dtype": "string",
+      "_type": "Value"
+    },
+    "speech_monotony": {
+      "dtype": "string",
+      "_type": "Value"
+    },
+    "text_description": {
+      "dtype": "string",
+      "_type": "Value"
+    }
+  },
+  "homepage": "",
+  "license": "",
+  "size_in_bytes": 6648337,
+  "splits": {
+    "train": {
+      "name": "train",
+      "num_bytes": 4643660,
+      "num_examples": 10000,
+      "dataset_name": "vertex-male1-tts-dataset-tags"
+    }
+  },
+  "version": {
+    "version_str": "0.0.0",
+    "major": 0,
+    "minor": 0,
+    "patch": 0
+  }
+}

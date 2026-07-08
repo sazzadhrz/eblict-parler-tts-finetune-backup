@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(conda env:*)",
+      "Bash(/home/eblict/miniconda3/envs/infer/bin/python:*)",
+      "Bash(/home/eblict/miniconda3/envs/infer/bin/pip list:*)"
+    ]
+  }
+}
